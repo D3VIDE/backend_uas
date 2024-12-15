@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
 
     // Query to fetch username and password (assuming password is stored as plain text in the database)
-    $query = "SELECT username, password, nama_admin FROM admin WHERE username = ?";
+    $query = "SELECT username, password, nama_admin FROM user_admin WHERE username = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $username);
     $stmt->execute();

@@ -73,6 +73,8 @@ if ($result === false) {
               </thead>
               <tbody>
                 <?php
+                $query = "SELECT * FROM detail_log_pengiriman ORDER BY nomor_resi ASC";
+                $result = $conn->query($query);
                 // Check if results are returned
                 if ($result->num_rows > 0) {
                     while ($row = $result->fetch_assoc()) {

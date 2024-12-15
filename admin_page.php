@@ -141,12 +141,12 @@
               </thead>
               <tbody>
                 <?php
-                $query = "SELECT * FROM transaksi_resi_pengiriman";
+                $query = "SELECT * FROM detail_log_pengiriman ORDER BY nomor_resi ASC";
                 $result = $conn->query($query);
                 if ($result->num_rows > 0) {
                   while ($row = $result->fetch_assoc()) {
                     echo "<tr>";
-                    echo "<td style='text-align:center'>" . $row["tanggal_resi"] . "</td>";
+                    echo "<td style='text-align:center'>" . $row["tanggal"] . "</td>";
                     echo "<td>" . $row["nomor_resi"] . "</td>";
                     echo "<td>
                                       <a href='#' class='btn btn-info' data-bs-toggle='modal' data-bs-target='#entryLogModal' data-nomor-resi='" . $row["nomor_resi"] . "'>Entry Log</a>

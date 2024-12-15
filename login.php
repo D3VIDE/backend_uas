@@ -1,5 +1,35 @@
 <?php
+session_start();
+include('DatabaseConnection.php');  // Make sure your database connection is included here
 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    $username = $_POST["username"];
+    $password = $_POST["password"];
+
+    // Query to fetch username and password (assuming password is stored as plain text in the database)
+    $query = "SELECT username, password, nama_admin FROM admin WHERE username = ?";
+    $stmt = $conn->prepare($query);
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    // Check if username exists
+    if ($result->num_rows > 0) {
+        $row = $result->fetch_assoc();  // Fetch the user data
+        $stored_password = $row['password'];  // The plain text password from the database
+        $stored_admin = $row['nama_admin'];
+        // If password is correct, set session and redirect
+        if ($password == $stored_password) {
+            $_SESSION["nama_admin"] = $stored_admin;
+            header("Location: admin_page.php");
+            exit();
+        } else {
+            echo "<script>alert('Invalid username or password');</script>";
+        }
+    } else {
+        echo "<script>alert('Invalid username or password');</script>";
+    }
+}
 ?>
 
 <!doctype html>
@@ -16,14 +46,14 @@
       height: 100%;
       margin: 0;
     }
-    
+
     .container {
       height: 100%;
       display: flex;
       justify-content: center;
       align-items: center;
     }
-    
+
     .login-box {
       width: 100%;
       max-width: 400px;
@@ -58,14 +88,14 @@
         <div class="login-header">
           <h3>Login</h3>
         </div>
-        <form action = "#" method="POST">
+        <form action="login.php" method="POST">
           <div class="mb-3">
             <label for="username" class="form-label">Username</label>
-            <input type="text" class="form-control" id="username" placeholder="Enter username" required>
+            <input type="text" class="form-control" id="username" name="username" placeholder="Enter username" required>
           </div>
           <div class="mb-3">
             <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" placeholder="Enter password" required>
+            <input type="password" class="form-control" id="password" name="password" placeholder="Enter password" required>
           </div>
           <button type="submit" class="btn btn-primary">Login</button>
         </form>

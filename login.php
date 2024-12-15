@@ -7,7 +7,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = $_POST["password"];
 
     // Query to fetch username and password (assuming password is stored as plain text in the database)
-    $query = "SELECT username, password, nama_admin FROM user_admin WHERE username = ?";
+    $query = "SELECT username, password, nama_admin,status_aktif FROM user_admin WHERE username = ?";
     $stmt = $conn->prepare($query);
     $stmt->bind_param("s", $username);
     $stmt->execute();
@@ -20,9 +20,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $stored_admin = $row['nama_admin'];
         // If password is correct, set session and redirect
         if ($password == $stored_password) {
+          if($row['status_aktif'] == 1){
             $_SESSION["nama_admin"] = $stored_admin;
             header("Location: admin_page.php");
             exit();
+          }else
+            echo"<script>alert('Your account is inactive. Please contact support.');</script>";
         } else {
             echo "<script>alert('Invalid username or password');</script>";
         }

@@ -94,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
               <a class="nav-link active text-light" aria-current="page" href="#dataPengiriman">Data Resi Pengiriman</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link text-light" href="#">User Admin</a>
+              <a class="nav-link text-light" href="#manage_user">User Admin</a>
             </li>
             <li class="nav-item">
               <a class="nav-link text-light" href="logout.php">Logout</a>
@@ -160,7 +160,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </tbody>
           </table>
         </div>
-        <div class="box  mt-3 p-2">
+        <div class="box mt-3 p-2" id="manage_user">
           <h2>Add New Admin</h2>
           <form action="#" method="POST">
             <div class="mb-3">
@@ -180,76 +180,75 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             </div>
           </form>
         </div>
+
         <!-- Display Admins Table -->
-        <div class="border mt-3">
-          <div class="box d-flex mt-3">
-            <div class="resi p-2">
-              <h2>Manage Admins</h2>
-              <table class="table table-bordered border-black m-2">
-                <thead>
-                  <tr>
-                    <th scope="col" class="col-2">Username</th>
-                    <th scope="col" class="col-5">Nama Admin</th>
-                    <th scope="col" class="col-2">Status Aktif</th>
-                    <th scope="col" class="col-3">Action</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <?php
-                  // Handle Add Admin
-                  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['nama_admin'])) {
-                    $username = $_POST['username'];
-                    $password = password_hash($_POST['password'], PASSWORD_DEFAULT); // Secure password storage
-                    $nama_admin = $_POST['nama_admin'];
+        <div class="box mt-3">
+          <div class="resi p-2">
+            <h2>Manage Admins</h2>
+            <table class="table table-bordered border-black m-2">
+              <thead>
+                <tr>
+                  <th scope="col">Username</th>
+                  <th scope="col">Nama Admin</th>
+                  <th scope="col">Status Aktif</th>
+                  <th scope="col">Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <?php
+                // Handle Add Admin
+                if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['username']) && isset($_POST['password']) && isset($_POST['nama_admin'])) {
+                  $username = $_POST['username'];
+                  $password = $_POST['password']; // Store plain text password
+                  $nama_admin = $_POST['nama_admin'];
 
-                    $query = "INSERT INTO user_admin (username, password, nama_admin) VALUES ('$username', '$password', '$nama_admin')";
-                    if ($conn->query($query) === TRUE) {
-                      echo "<div class='alert alert-success'>New admin added successfully.</div>";
-                    } else {
-                      echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
-                    }
-                  }
-
-                  // Handle Status Update (Activate/Deactivate)
-                  if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
-                    $username = $_POST['username'];
-                    $status_aktif = $_POST['status_aktif']; // 1 for active, 0 for inactive
-                  
-                    $query = "UPDATE user_admin SET status_aktif = $status_aktif WHERE username = '$username'";
-                    if ($conn->query($query) === TRUE) {
-                      echo "<div class='alert alert-success'>Admin status updated successfully.</div>";
-                    } else {
-                      echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
-                    }
-                  }
-
-                  // Display Admins
-                  $query = "SELECT * FROM user_admin";
-                  $result = $conn->query($query);
-                  if ($result->num_rows > 0) {
-                    while ($row = $result->fetch_assoc()) {
-                      $status = $row["status_aktif"] ? "Active" : "Inactive";
-                      $status_toggle = $row["status_aktif"] ? 0 : 1; // Toggle status
-                      echo "<tr>";
-                      echo "<td>" . $row["username"] . "</td>";
-                      echo "<td>" . $row["nama_admin"] . "</td>";
-                      echo "<td>" . $status . "</td>";
-                      echo "<td>
-                                        <form action='' method='POST'>
-                                            <input type='hidden' name='username' value='" . $row['username'] . "'>
-                                            <input type='hidden' name='status_aktif' value='" . $status_toggle . "'>
-                                            <button type='submit' name='update_status' class='btn btn-warning'>" . ($status == "Active" ? "Deactivate" : "Activate") . "</button>
-                                        </form>
-                                      </td>";
-                      echo "</tr>";
-                    }
+                  $query = "INSERT INTO user_admin (username, password, nama_admin) VALUES ('$username', '$password', '$nama_admin')";
+                  if ($conn->query($query) === TRUE) {
+                    echo "<div class='alert alert-success'>New admin added successfully.</div>";
                   } else {
-                    echo "<tr><td colspan='4'>No admins found.</td></tr>";
+                    echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
                   }
-                  ?>
-                </tbody>
-              </table>
-            </div>
+                }
+
+                // Handle Status Update (Activate/Deactivate)
+                if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST['update_status'])) {
+                  $username = $_POST['username'];
+                  $status_aktif = $_POST['status_aktif']; // 1 for active, 0 for inactive
+                
+                  $query = "UPDATE user_admin SET status_aktif = $status_aktif WHERE username = '$username'";
+                  if ($conn->query($query) === TRUE) {
+                    echo "<div class='alert alert-success' style='width:350px' >Admin status updated successfully.</div>";
+                  } else {
+                    echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
+                  }
+                }
+
+                // Display Admins
+                $query = "SELECT * FROM user_admin";
+                $result = $conn->query($query);
+                if ($result->num_rows > 0) {
+                  while ($row = $result->fetch_assoc()) {
+                    $status = $row["status_aktif"] ? "Active" : "Inactive";
+                    $status_toggle = $row["status_aktif"] ? 0 : 1; // Toggle status
+                    echo "<tr>";
+                    echo "<td>" . $row["username"] . "</td>";
+                    echo "<td>" . $row["nama_admin"] . "</td>";
+                    echo "<td>" . $status . "</td>";
+                    echo "<td>
+                      <form action='' method='POST'>
+                          <input type='hidden' name='username' value='" . $row['username'] . "'>
+                          <input type='hidden' name='status_aktif' value='" . $status_toggle . "'>
+                          <button type='submit' name='update_status' class='btn btn-warning'>" . ($status == "Active" ? "Deactivate" : "Activate") . "</button>
+                      </form>
+                    </td>";
+                    echo "</tr>";
+                  }
+                } else {
+                  echo "<tr><td colspan='4'>No admins found.</td></tr>";
+                }
+                ?>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>

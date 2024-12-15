@@ -67,7 +67,7 @@ if ($result === false) {
               <thead>
                 <tr>
                   <th scope="col" class="col-2">Tanggal Resi</th>
-                  <th scope="col " class="col-5">Nomor Resi</th>
+                  <th scope="col " class="col-5">Kota</th>
                   <th scope="col " class="col-5">Keterangan</th>
                 </tr>
               </thead>

@@ -6,6 +6,20 @@ $Admin = isset($_SESSION["nama_admin"]) ? $_SESSION["nama_admin"] : "";
 $alertMessage = "";
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
+      if (isset($_POST["tanggal"]) && isset($_POST["nomor_resi"])) {
+        $tanggal = $_POST["tanggal"];
+        $NoResi = $_POST["nomor_resi"];
+        $query = "INSERT INTO transaksi_resi_pengiriman (nomor_resi, tanggal_resi) VALUES (?, ?)";
+        $query2 = "INSERT INTO detail_log_pengiriman (nomor_resi, tanggal) VALUES (?, ?)";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("ss", $NoResi, $tanggal);
+        $stmt->execute();
+        $stmt2 = $conn->prepare($query2);
+        $stmt2->bind_param("ss", $NoResi, $tanggal);
+        $stmt2->execute();
+        header("Location: admin_page.php");
+        exit();
+    }
     if (isset($_POST["kota"]) && isset($_POST["keterangan"]) && isset($_POST["nomor_resi_log"])) {
         $kota = $_POST["kota"];
         $keterangan = $_POST["keterangan"];
@@ -32,23 +46,24 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
     }
 
-    if (isset($_GET['delete'])) {
-        $noResiToDelete = $_GET['delete'];
-
-        // First, delete the logs related to this nomor_resi
-        $deleteLogQuery = "DELETE FROM detail_log_pengiriman WHERE nomor_resi = ?";
-        $stmtDeleteLog = $conn->prepare($deleteLogQuery);
-        $stmtDeleteLog->bind_param("s", $noResiToDelete);
-        $stmtDeleteLog->execute();
-
-        // Then, delete the parent record
-        $deleteQuery = "DELETE FROM transaksi_resi_pengiriman WHERE nomor_resi = ?";
-        $stmtDelete = $conn->prepare($deleteQuery);
-        $stmtDelete->bind_param("s", $noResiToDelete);
-        $stmtDelete->execute();
-
+      if (isset($_POST['delete'])) {
+        $nomorResi = $_POST['nomor_resi']; // Mengambil nomor resi dari formulir
+        
+        // Membuat query untuk menghapus data dari detail_log_pengiriman dan transaksi_resi_pengiriman
+        $query = "DELETE FROM detail_log_pengiriman WHERE nomor_resi = ?";
+        $stmt = $conn->prepare($query);
+        $stmt->bind_param("s", $nomorResi);
+        $stmt->execute();
+    
+        // Menghapus dari transaksi_resi_pengiriman
+        $query2 = "DELETE FROM transaksi_resi_pengiriman WHERE nomor_resi = ?";
+        $stmt2 = $conn->prepare($query2);
+        $stmt2->bind_param("s", $nomorResi);
+        $stmt2->execute();
+    
+        // Mengarahkan ulang ke halaman admin setelah penghapusan
         header("Location: admin_page.php");
-        exit;
+        exit();
     }
 }
 ?>
@@ -128,7 +143,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             echo "<td>" . $row["nomor_resi"] . "</td>";
                             echo "<td>
                                     <a href='#' class='btn btn-info' data-bs-toggle='modal' data-bs-target='#entryLogModal' data-nomor-resi='" . $row["nomor_resi"] . "'>Entry Log</a>
-                                    <a href='?delete=" . $row["nomor_resi"] . "' class='btn btn-danger'>Delete</a>
+                                    <form action='' method='POST' style='display:inline;'>
+                                        <input type='hidden' name='nomor_resi' value='" . $row['nomor_resi'] . "'>
+                                        <button type='submit' name='delete' class='btn btn-danger'>Delete</button>
+                                    </form>
                                   </td>";
                             echo "</tr>";
                         }
@@ -149,7 +167,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 <h5 class="modal-title" id="entryLogModalLabel">Entry Log Pengiriman</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
+            <div class="modal-body ">
                 <form action="#" method="POST">
                     <div class="mb-3">
                         <label for="kota" class="form-label">Kota</label>
@@ -160,8 +178,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         <textarea class="form-control" id="keterangan" name="keterangan" rows="3" required></textarea>
                     </div>
                     <input type="hidden" id="nomor_resi_log" name="nomor_resi_log">
-                    <div class="mb-3">
-                        <button type="submit" class="btn btn-dark text-white" style="width:250px;">Submit</button>
+                    <div class="mb-3 d-flex justify-content-center">
+                        <button type="submit" class="btn btn-dark text-white" style="width:250px;text-align:center">Submit</button>
                     </div>
                 </form>
             </div>

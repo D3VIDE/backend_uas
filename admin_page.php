@@ -2,8 +2,15 @@
     session_start();
     include("DatabaseConnection.php");
     $Admin = isset( $_SESSION["nama_admin"] ) ? $_SESSION["nama_admin"] :"";
-
-    
+    $alertMessage = "";
+    if($_SERVER["REQUEST_METHOD"] == "POST"){
+      $tanggal = $_POST["tanggal"];
+      $NoResi = $_POST["nomor_resi"];
+      $query = "INSERT INTO transaksi_pengiriman (nomor_resi, tanggal_resi) VALUES (?,?)";
+      $stmt = $conn ->prepare($query);
+      $stmt -> bind_param("is",$NoResi,$tanggal);
+      $stmt->execute();
+    }
   ?>
 <!doctype html>
 <html lang="en">
@@ -49,11 +56,11 @@
               <form action="#" method="POST">
                 <div class="mb-3">
                   <label for="tanggal" class="form-label">Tanggal: </label>
-                  <input type="date" class="form-control" id="tanggal" style="width:250px">
+                  <input type="date" class="form-control" id="tanggal" name="tanggal" style="width:250px">
                 </div>
                 <div class="mb-3">
                   <label for="NomorResi" class="form-label">Nomor Resi: </label>
-                  <input type="text" class="form-control" id="nomor_resi" style="width:250px" placeholder="RS-">
+                  <input type="text" class="form-control" id="nomor_resi" name="nomor_resi" style="width:250px" placeholder="RS-">
                 </div>
                 <div class="mb-3">
                   <button type = "submit" class="btn btn-dark text-white" style="width:250px;">Entry</button>

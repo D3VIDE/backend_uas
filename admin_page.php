@@ -219,7 +219,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                   if ($conn->query($query) === TRUE) {
                     echo "<div class='alert alert-success' style='width:350px' >Admin status updated successfully.</div>";
                   } else {
-                    echo "<div class='alert alert-danger'>Error: " . $conn->error . "</div>";
+                    echo "<div class='alert alert-danger' style='width:350px'>Error: " . $conn->error . "</div>";
                   }
                 }
 

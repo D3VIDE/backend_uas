@@ -1,3 +1,7 @@
+<?php
+  session_start();
+  include("DatabaseConnection.php");
+?>
 <!doctype html>
 <html lang="en">
   <head>
@@ -49,7 +53,21 @@
                   <th scope="col " class="col-5">Kota</th>
                   <th scope="col " class="col-5">Keterangan</th>
                 </tr>
-                <!-- PHP DISINI -->
+                <tbody>
+                  <?php
+                  $query = "SELECT * FROM detail_log_pengiriman";
+                  $result = $conn->query($query);
+                  if ($result->num_rows > 0) {
+                    while ($row = $result->fetch_assoc()) {
+                      echo "<tr>";
+                      echo "<td>" . $row["tanggal"] . "</td>";
+                      echo "<td>" . $row["kota"] . "</td>";
+                      echo "<td>" . $row["keterangan"] . "</td>";
+                      echo "</tr>";
+                    }
+                  }
+                  ?>
+                </tbody>
 
               </thead>
             </table>
